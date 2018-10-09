@@ -1,0 +1,7 @@
+localhost:8080
+errors stderr
+log stdout
+internal /internal
+proxy /private localhost:9000
+proxy /signup localhost:9000
+proxy /signin localhost:9000
