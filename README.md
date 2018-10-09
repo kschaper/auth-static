@@ -19,8 +19,10 @@ The following parts are included:
 
 ## Install
 
-Clone this repo, change into its dir, install its dependencies:
+Clone this repo, install its dependencies:
 
+    $ mkdir -p $GOPATH/src/github.com/kschaper/auth-static && cd $_
+    $ git clone https://github.com/kschaper/auth-static .
     $ dep ensure
 
 Install the binaries. The output dir specified by `-o` has to be in your `$PATH`.
