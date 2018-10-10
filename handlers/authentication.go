@@ -44,9 +44,11 @@ func AuthenticationHandler(store *sessions.CookieStore, userService *services.Us
 		}
 
 		// set Content-Type header
-		if mime := mime.TypeByExtension(path.Ext(r.URL.Path)); mime != "" {
-			w.Header().Set("Content-Type", mime)
+		mime := mime.TypeByExtension(path.Ext(r.URL.Path))
+		if mime == "" {
+			mime = "text/html"
 		}
+		w.Header().Set("Content-Type", mime)
 
 		// set header
 		w.Header().Set("X-Accel-Redirect", strings.Replace(r.URL.String(), ProtectedAreaDirExternal, ProtectedAreaDirInternal, 1))
