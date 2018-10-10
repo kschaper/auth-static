@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.com/kschaper/auth-static/handlers"
-	"gitlab.com/kschaper/auth-static/services"
+	"github.com/kschaper/auth-static/handlers"
+	"github.com/kschaper/auth-static/services"
 
 	"github.com/gorilla/sessions"
 	uuid "github.com/satori/go.uuid"

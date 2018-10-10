@@ -10,8 +10,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"gitlab.com/kschaper/auth-static/handlers"
-	"gitlab.com/kschaper/auth-static/services"
+	"github.com/kschaper/auth-static/handlers"
+	"github.com/kschaper/auth-static/services"
 )
 
 var (

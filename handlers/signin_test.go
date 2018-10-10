@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/gorilla/sessions"
-	"gitlab.com/kschaper/auth-static/handlers"
-	"gitlab.com/kschaper/auth-static/services"
+	"github.com/kschaper/auth-static/handlers"
+	"github.com/kschaper/auth-static/services"
 )
 
 func TestSigninFormHandler(t *testing.T) {

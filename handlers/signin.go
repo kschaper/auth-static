@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
-	"gitlab.com/kschaper/auth-static/services"
+	"github.com/kschaper/auth-static/services"
 )
 
 type signinFormTplData struct {

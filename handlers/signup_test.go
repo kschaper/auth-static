@@ -14,8 +14,8 @@ import (
 	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 
-	"gitlab.com/kschaper/auth-static/handlers"
-	"gitlab.com/kschaper/auth-static/services"
+	"github.com/kschaper/auth-static/handlers"
+	"github.com/kschaper/auth-static/services"
 )
 
 func db(t *testing.T) *sql.DB {

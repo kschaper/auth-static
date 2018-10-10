@@ -8,7 +8,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	uuid "github.com/satori/go.uuid"
-	"gitlab.com/kschaper/auth-static/services"
+	"github.com/kschaper/auth-static/services"
 )
 
 func db(t *testing.T) *sql.DB {

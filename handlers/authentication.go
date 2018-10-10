@@ -10,7 +10,7 @@ import (
 	"github.com/satori/go.uuid"
 
 	"github.com/gorilla/sessions"
-	"gitlab.com/kschaper/auth-static/services"
+	"github.com/kschaper/auth-static/services"
 )
 
 // AuthenticationHandler gets the user_id from the session and checks if there's a corresponding user in the database.

@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/kschaper/auth-static/services"
 	_ "github.com/mattn/go-sqlite3"
-	"gitlab.com/kschaper/auth-static/services"
 )
 
 var (
