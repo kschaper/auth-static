@@ -21,6 +21,10 @@ var (
 	blockKey  = flag.String("blockkey", "", "cookie encryption key")
 	keylength = 32
 	secure    = flag.Bool("secure", false, "cookie secure flag")
+
+	external = flag.String("external", "/private/", "protected area external dir, default: /private/")
+	internal = flag.String("internal", "/internal/", "protected area internal dir, default: /internal/")
+	home     = flag.String("home", "main.html", "protected area home, default: main.html")
 )
 
 // TODO: introduce -host flag
@@ -54,6 +58,9 @@ func main() {
 
 	// config
 	conf := config.NewConfig()
+	conf.ProtectedAreaDirExternal = *external
+	conf.ProtectedAreaDirInternal = *internal
+	conf.ProtectedAreaHome = *home
 
 	// routes
 	r := mux.NewRouter()
