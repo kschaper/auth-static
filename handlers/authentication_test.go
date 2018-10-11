@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kschaper/auth-static/config"
+
 	"github.com/kschaper/auth-static/handlers"
 	"github.com/kschaper/auth-static/services"
 
@@ -32,7 +34,8 @@ func TestAuthenticationHandler(t *testing.T) {
 
 			// handler
 			store := sessions.NewCookieStore([]byte("abc"))
-			handler := handlers.AuthenticationHandler(store, userService)
+			conf := config.NewConfig()
+			handler := handlers.AuthenticationHandler(conf, store, userService)
 			w := httptest.NewRecorder()
 
 			// request
@@ -42,7 +45,7 @@ func TestAuthenticationHandler(t *testing.T) {
 			}
 
 			// get the session
-			session, err := store.Get(req, handlers.SessionName)
+			session, err := store.Get(req, conf.SessionName)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -54,7 +57,7 @@ func TestAuthenticationHandler(t *testing.T) {
 			}
 
 			// put the user id in session
-			session.Values[handlers.UserIDKey] = id.String()
+			session.Values[conf.UserIDKey] = id.String()
 			if err := session.Save(req, w); err != nil {
 				t.Fatal(err)
 			}
@@ -93,7 +96,8 @@ func TestAuthenticationHandler(t *testing.T) {
 
 			// handler
 			store := sessions.NewCookieStore([]byte("abc"))
-			handler := handlers.AuthenticationHandler(store, userService)
+			conf := config.NewConfig()
+			handler := handlers.AuthenticationHandler(conf, store, userService)
 			w := httptest.NewRecorder()
 
 			// request
@@ -103,13 +107,13 @@ func TestAuthenticationHandler(t *testing.T) {
 			}
 
 			// get the session
-			session, err := store.Get(req, handlers.SessionName)
+			session, err := store.Get(req, conf.SessionName)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			// put unkown user id in session
-			session.Values[handlers.UserIDKey] = uuid.NewV4().String()
+			session.Values[conf.UserIDKey] = uuid.NewV4().String()
 			if err := session.Save(req, w); err != nil {
 				t.Fatal(err)
 			}
@@ -151,7 +155,8 @@ func TestAuthenticationHandler(t *testing.T) {
 
 			// handler
 			store := sessions.NewCookieStore([]byte("abc"))
-			handler := handlers.AuthenticationHandler(store, userService)
+			conf := config.NewConfig()
+			handler := handlers.AuthenticationHandler(conf, store, userService)
 			w := httptest.NewRecorder()
 
 			// request
@@ -161,7 +166,7 @@ func TestAuthenticationHandler(t *testing.T) {
 			}
 
 			// get the session
-			session, err := store.Get(req, handlers.SessionName)
+			session, err := store.Get(req, conf.SessionName)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -173,7 +178,7 @@ func TestAuthenticationHandler(t *testing.T) {
 			}
 
 			// put the user id in session
-			session.Values[handlers.UserIDKey] = id.String()
+			session.Values[conf.UserIDKey] = id.String()
 			if err := session.Save(req, w); err != nil {
 				t.Fatal(err)
 			}

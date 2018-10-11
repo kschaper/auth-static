@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
+	"github.com/kschaper/auth-static/config"
 	"github.com/kschaper/auth-static/services"
 )
 
@@ -39,12 +40,12 @@ const signinFormTpl = `<!DOCTYPE html>
 `
 
 // SigninFormHandler shows the signin form.
-func SigninFormHandler(store *sessions.CookieStore) func(w http.ResponseWriter, r *http.Request) {
+func SigninFormHandler(conf *config.Config, store *sessions.CookieStore) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tpl := template.Must(template.New("signin").Parse(signinFormTpl))
 
 		// get session
-		session, err := store.Get(r, SessionName)
+		session, err := store.Get(r, conf.SessionName)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -71,7 +72,7 @@ func SigninFormHandler(store *sessions.CookieStore) func(w http.ResponseWriter, 
 }
 
 // SigninHandler authenticates and redirects.
-func SigninHandler(store *sessions.CookieStore, userService *services.UserService) func(w http.ResponseWriter, r *http.Request) {
+func SigninHandler(conf *config.Config, store *sessions.CookieStore, userService *services.UserService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			email    = r.PostFormValue("email")
@@ -86,7 +87,7 @@ func SigninHandler(store *sessions.CookieStore, userService *services.UserServic
 		}
 
 		// get session
-		session, err := store.Get(r, SessionName)
+		session, err := store.Get(r, conf.SessionName)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
@@ -111,13 +112,13 @@ func SigninHandler(store *sessions.CookieStore, userService *services.UserServic
 		}
 
 		// store user id in session
-		session.Values[UserIDKey] = id.String()
+		session.Values[conf.UserIDKey] = id.String()
 		if err := session.Save(r, w); err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 
 		// redirect to protected area
-		http.Redirect(w, r, ProtectedAreaPublicHome, http.StatusFound)
+		http.Redirect(w, r, conf.ProtectedAreaDirExternal+conf.ProtectedAreaHome, http.StatusFound)
 	}
 }

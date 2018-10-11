@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/sessions"
+	"github.com/kschaper/auth-static/config"
 	"github.com/kschaper/auth-static/handlers"
 	"github.com/kschaper/auth-static/services"
 )
@@ -20,7 +21,8 @@ func TestSigninFormHandler(t *testing.T) {
 			// server
 			store := sessions.NewCookieStore([]byte("abc"))
 			mux := http.NewServeMux()
-			mux.HandleFunc("/signin/", handlers.SigninFormHandler(store))
+			conf := config.NewConfig()
+			mux.HandleFunc("/signin/", handlers.SigninFormHandler(conf, store))
 			ts := httptest.NewServer(mux)
 			defer ts.Close()
 
@@ -89,8 +91,9 @@ func TestSigninHandler(t *testing.T) {
 
 			// server
 			store := sessions.NewCookieStore([]byte("abc"))
+			conf := config.NewConfig()
 			mux := http.NewServeMux()
-			mux.HandleFunc("/signin/", handlers.SigninHandler(store, userService))
+			mux.HandleFunc("/signin/", handlers.SigninHandler(conf, store, userService))
 			ts := httptest.NewServer(mux)
 			defer ts.Close()
 
@@ -114,20 +117,21 @@ func TestSigninHandler(t *testing.T) {
 
 			// ensure redirect to protected area
 			location := resp.Header.Get("Location")
-			if location != handlers.ProtectedAreaPublicHome {
-				t.Fatalf("expected redirect to %s but was to %s\n", handlers.ProtectedAreaPublicHome, location)
+			expectedLocation := conf.ProtectedAreaDirExternal + conf.ProtectedAreaHome
+			if location != expectedLocation {
+				t.Fatalf("expected redirect to %s but was to %s\n", expectedLocation, location)
 			}
 
 			// ensure cookie has been set
 			sessionCookieFound := false
 			for _, cookie := range resp.Cookies() {
-				if cookie.Name == handlers.SessionName {
+				if cookie.Name == conf.SessionName {
 					sessionCookieFound = true
 					break
 				}
 			}
 			if !sessionCookieFound {
-				t.Fatalf("expected %s cookie to exist but didn't: %s\n", handlers.SessionName, resp.Cookies())
+				t.Fatalf("expected %s cookie to exist but didn't: %s\n", conf.SessionName, resp.Cookies())
 			}
 		},
 		"fail": func(t *testing.T) {
@@ -138,8 +142,9 @@ func TestSigninHandler(t *testing.T) {
 
 			// server
 			store := sessions.NewCookieStore([]byte("abc"))
+			conf := config.NewConfig()
 			mux := http.NewServeMux()
-			mux.HandleFunc("/signin/", handlers.SigninHandler(store, userService))
+			mux.HandleFunc("/signin/", handlers.SigninHandler(conf, store, userService))
 			ts := httptest.NewServer(mux)
 			defer ts.Close()
 
@@ -161,7 +166,7 @@ func TestSigninHandler(t *testing.T) {
 				t.Fatalf("expected status code %d but got %d\n", http.StatusFound, resp.StatusCode)
 			}
 
-			// ensure redirect to protected area
+			// ensure redirect to signin page
 			location := resp.Header.Get("Location")
 			expected := "/signin"
 			if location != expected {

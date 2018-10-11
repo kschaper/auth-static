@@ -10,24 +10,8 @@ import (
 	"github.com/satori/go.uuid"
 
 	"github.com/gorilla/sessions"
+	"github.com/kschaper/auth-static/config"
 	"github.com/kschaper/auth-static/services"
-)
-
-const (
-	// SessionName is the cookie name for the session
-	SessionName = "auth-static"
-
-	// UserIDKey is the user_id session key
-	UserIDKey = "user_id"
-
-	// ProtectedAreaDirExternal is the URL path of the protected area visible to the user.
-	ProtectedAreaDirExternal = "/private/"
-
-	// ProtectedAreaDirInternal is the URL path of the protected area not visible to the user.
-	ProtectedAreaDirInternal = "/internal/"
-
-	// ProtectedAreaPublicHome is the URL of the protected area's homepage.
-	ProtectedAreaPublicHome = ProtectedAreaDirExternal + "main.html"
 )
 
 type signupFormTplData struct {
@@ -62,7 +46,7 @@ const signupFormTpl = `<!DOCTYPE html>
 `
 
 // SignupFormHandler shows the signup form.
-func SignupFormHandler(store *sessions.CookieStore) func(w http.ResponseWriter, r *http.Request) {
+func SignupFormHandler(conf *config.Config, store *sessions.CookieStore) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			reg  = regexp.MustCompile("[a-z0-9]{32}")
@@ -71,7 +55,7 @@ func SignupFormHandler(store *sessions.CookieStore) func(w http.ResponseWriter, 
 		)
 
 		// get session
-		session, err := store.Get(r, SessionName)
+		session, err := store.Get(r, conf.SessionName)
 		if err != nil {
 			log.Print(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -102,7 +86,7 @@ func SignupFormHandler(store *sessions.CookieStore) func(w http.ResponseWriter, 
 }
 
 // SignupHandler sets the password and redirects.
-func SignupHandler(store *sessions.CookieStore, userService *services.UserService) func(w http.ResponseWriter, r *http.Request) {
+func SignupHandler(conf *config.Config, store *sessions.CookieStore, userService *services.UserService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			reg          = regexp.MustCompile("[a-z0-9]{32}")
@@ -113,7 +97,7 @@ func SignupHandler(store *sessions.CookieStore, userService *services.UserServic
 		)
 
 		// get session
-		session, err := store.Get(r, SessionName)
+		session, err := store.Get(r, conf.SessionName)
 
 		// get user id
 		if err == nil {
@@ -143,13 +127,13 @@ func SignupHandler(store *sessions.CookieStore, userService *services.UserServic
 		}
 
 		// store user id in session
-		session.Values[UserIDKey] = id.String()
+		session.Values[conf.UserIDKey] = id.String()
 		if err := session.Save(r, w); err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 
 		// redirect to protected area
-		http.Redirect(w, r, ProtectedAreaPublicHome, http.StatusFound)
+		http.Redirect(w, r, conf.ProtectedAreaDirExternal+conf.ProtectedAreaHome, http.StatusFound)
 	}
 }

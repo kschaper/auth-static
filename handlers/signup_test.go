@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 
+	"github.com/kschaper/auth-static/config"
 	"github.com/kschaper/auth-static/handlers"
 	"github.com/kschaper/auth-static/services"
 )
@@ -34,8 +35,9 @@ func TestSignupFormHandler(t *testing.T) {
 
 			// server
 			store := sessions.NewCookieStore([]byte("abc"))
+			conf := config.NewConfig()
 			mux := http.NewServeMux()
-			mux.HandleFunc("/signup/", handlers.SignupFormHandler(store))
+			mux.HandleFunc("/signup/", handlers.SignupFormHandler(conf, store))
 			ts := httptest.NewServer(mux)
 			defer ts.Close()
 
@@ -92,8 +94,9 @@ func TestSignupHandler(t *testing.T) {
 
 			// server
 			store := sessions.NewCookieStore([]byte("abc"))
+			conf := config.NewConfig()
 			mux := http.NewServeMux()
-			mux.HandleFunc("/signup/", handlers.SignupHandler(store, userService))
+			mux.HandleFunc("/signup/", handlers.SignupHandler(conf, store, userService))
 			ts := httptest.NewServer(mux)
 			defer ts.Close()
 
@@ -117,20 +120,21 @@ func TestSignupHandler(t *testing.T) {
 
 			// ensure redirect to protected area
 			location := resp.Header.Get("Location")
-			if location != handlers.ProtectedAreaPublicHome {
-				t.Fatalf("expected redirect to %s but was to %s\n", handlers.ProtectedAreaPublicHome, location)
+			expectedLocation := conf.ProtectedAreaDirExternal + conf.ProtectedAreaHome
+			if location != expectedLocation {
+				t.Fatalf("expected redirect to %s but was to %s\n", expectedLocation, location)
 			}
 
 			// ensure cookie has been set
 			sessionCookieFound := false
 			for _, cookie := range resp.Cookies() {
-				if cookie.Name == handlers.SessionName {
+				if cookie.Name == conf.SessionName {
 					sessionCookieFound = true
 					break
 				}
 			}
 			if !sessionCookieFound {
-				t.Fatalf("expected %s cookie to exist but didn't: %s\n", handlers.SessionName, resp.Cookies())
+				t.Fatalf("expected %s cookie to exist but didn't: %s\n", conf.SessionName, resp.Cookies())
 			}
 
 			// ensure hash has been stored and code deleted

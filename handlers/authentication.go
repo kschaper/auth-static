@@ -10,23 +10,24 @@ import (
 	"github.com/satori/go.uuid"
 
 	"github.com/gorilla/sessions"
+	"github.com/kschaper/auth-static/config"
 	"github.com/kschaper/auth-static/services"
 )
 
 // AuthenticationHandler gets the user_id from the session and checks if there's a corresponding user in the database.
-func AuthenticationHandler(store *sessions.CookieStore, userService *services.UserService) func(w http.ResponseWriter, r *http.Request) {
+func AuthenticationHandler(conf *config.Config, store *sessions.CookieStore, userService *services.UserService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		notFoundText := fmt.Sprintf("%d %s", http.StatusNotFound, http.StatusText(http.StatusNotFound))
 
 		// get session
-		session, err := store.Get(r, SessionName)
+		session, err := store.Get(r, conf.SessionName)
 		if err != nil {
 			http.Error(w, notFoundText, http.StatusNotFound)
 			return
 		}
 
 		// get user_id from session and convert into UUID
-		userID := session.Values[UserIDKey]
+		userID := session.Values[conf.UserIDKey]
 		if userID == nil {
 			http.Error(w, notFoundText, http.StatusNotFound)
 			return
@@ -51,6 +52,6 @@ func AuthenticationHandler(store *sessions.CookieStore, userService *services.Us
 		w.Header().Set("Content-Type", mime)
 
 		// set header
-		w.Header().Set("X-Accel-Redirect", strings.Replace(r.URL.String(), ProtectedAreaDirExternal, ProtectedAreaDirInternal, 1))
+		w.Header().Set("X-Accel-Redirect", strings.Replace(r.URL.String(), conf.ProtectedAreaDirExternal, conf.ProtectedAreaDirInternal, 1))
 	}
 }

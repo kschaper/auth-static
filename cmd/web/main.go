@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/kschaper/auth-static/config"
 	"github.com/kschaper/auth-static/handlers"
 	"github.com/kschaper/auth-static/services"
 )
@@ -51,13 +52,16 @@ func main() {
 	// services
 	userService := &services.UserService{DB: db}
 
+	// config
+	conf := config.NewConfig()
+
 	// routes
 	r := mux.NewRouter()
-	r.HandleFunc("/signup/{code:[a-z0-9]{32}}", handlers.SignupFormHandler(store)).Methods("GET")
-	r.HandleFunc("/signup/{code:[a-z0-9]{32}}", handlers.SignupHandler(store, userService)).Methods("POST")
-	r.HandleFunc("/signin", handlers.SigninFormHandler(store)).Methods("GET")
-	r.HandleFunc("/signin", handlers.SigninHandler(store, userService)).Methods("POST")
-	r.PathPrefix(handlers.ProtectedAreaDirExternal).HandlerFunc(handlers.AuthenticationHandler(store, userService))
+	r.HandleFunc("/signup/{code:[a-z0-9]{32}}", handlers.SignupFormHandler(conf, store)).Methods("GET")
+	r.HandleFunc("/signup/{code:[a-z0-9]{32}}", handlers.SignupHandler(conf, store, userService)).Methods("POST")
+	r.HandleFunc("/signin", handlers.SigninFormHandler(conf, store)).Methods("GET")
+	r.HandleFunc("/signin", handlers.SigninHandler(conf, store, userService)).Methods("POST")
+	r.PathPrefix(conf.ProtectedAreaDirExternal).HandlerFunc(handlers.AuthenticationHandler(conf, store, userService))
 	http.Handle("/", r)
 
 	// server
