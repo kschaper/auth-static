@@ -16,19 +16,24 @@ import (
 )
 
 var (
-	dsn       = flag.String("dsn", "prod.db", "data source name")
+	// web server
+	host = flag.String("host", "localhost", "the host the server listens to")
+	port = flag.Int("port", 9000, "the port the server listens to")
+
+	// database
+	dsn = flag.String("dsn", "prod.db", "data source name")
+
+	// cookie
 	hashKey   = flag.String("hashkey", "", "cookie authentication key")
 	blockKey  = flag.String("blockkey", "", "cookie encryption key")
 	keylength = 32
 	secure    = flag.Bool("secure", false, "cookie secure flag")
 
-	external = flag.String("external", "/private/", "protected area external dir, default: /private/")
-	internal = flag.String("internal", "/internal/", "protected area internal dir, default: /internal/")
+	// paths
+	external = flag.String("external", "/private/", "protected area external dir")
+	internal = flag.String("internal", "/internal/", "protected area internal dir")
 	home     = flag.String("home", "main.html", "protected area home, default: main.html")
 )
-
-// TODO: introduce -host flag
-// TODO: introduce -port flag
 
 func main() {
 	flag.Parse()
@@ -72,5 +77,7 @@ func main() {
 	http.Handle("/", r)
 
 	// server
-	log.Fatal(http.ListenAndServe("localhost:9000", nil))
+	addr := fmt.Sprintf("%s:%d", *host, *port)
+	fmt.Printf("Server running at http://%s\n", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
