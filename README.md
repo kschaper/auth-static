@@ -1,5 +1,9 @@
 # auth-static
 
+**Notice: This project has moved!**
+
+The new location for this repository is https://gitlab.com/kschaper/auth-static.
+
 > Protect static files to be accessible to logged-in users only.
 
 The files are served by a web server that supports the `X-Accel-Redirect` HTTP header.
